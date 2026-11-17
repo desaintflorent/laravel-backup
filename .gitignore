@@ -1,0 +1,6 @@
+/.context
+/.phpunit.cache
+/vendor
+.DS_Store
+.phpunit.result.cache
+composer.lock

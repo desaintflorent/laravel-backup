@@ -1,0 +1,65 @@
+{
+    "$schema": "https://getcomposer.org/schema.json",
+    "name": "brindepaille/laravel-backup",
+    "description": "Sauvegarde d'un site Laravel vers un bucket S3 : dump de la base (spatie/laravel-backup) et miroir du disque de fichiers, activés par variables d'environnement.",
+    "type": "library",
+    "keywords": [
+        "laravel",
+        "backup",
+        "s3"
+    ],
+    "license": "proprietary",
+    "require": {
+        "php": "^8.5",
+        "illuminate/console": "^13.0",
+        "illuminate/contracts": "^13.0",
+        "illuminate/filesystem": "^13.0",
+        "illuminate/support": "^13.0",
+        "league/flysystem-aws-s3-v3": "^3.30",
+        "spatie/laravel-backup": "^10.3"
+    },
+    "require-dev": {
+        "larastan/larastan": "^3.9",
+        "laravel/pint": "^1.27",
+        "orchestra/testbench": "^11.0",
+        "phpunit/phpunit": "^12.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "Brindepaille\\Backup\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Brindepaille\\Backup\\Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "lint": [
+            "pint --parallel"
+        ],
+        "lint:check": [
+            "pint --parallel --test"
+        ],
+        "types:check": [
+            "phpstan analyse --memory-limit=1G"
+        ],
+        "test": [
+            "@lint:check",
+            "@types:check",
+            "phpunit"
+        ]
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Brindepaille\\Backup\\BackupServiceProvider"
+            ]
+        }
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}
