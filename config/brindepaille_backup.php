@@ -4,7 +4,7 @@ return [
 
     /*
      * Nom du site : exactement le nom de son utilisateur IAM. Il donne les
-     * dossiers db/<nom>/ (dumps) et files/<nom>/ (fichiers) dans le bucket.
+     * dossiers db/<nom>/ (dumps) et files/<nom>/<disque>/ (fichiers) dans le bucket.
      */
     'name' => env('BACKUP_NAME'),
 
@@ -13,6 +13,12 @@ return [
      * Le miroir des fichiers reste quotidien dans les deux cas.
      */
     'frequency' => env('BACKUP_FREQUENCY', 'daily'),
+
+    /*
+     * Connexions dont la base est dumpée, séparées par des virgules :
+     * « mysql,reporting ». Vide : la connexion de DB_CONNECTION.
+     */
+    'databases' => env('BACKUP_DATABASES'),
 
     /*
      * Adresse qui reçoit la sortie d'une tâche en échec. Vide : aucun mail.
@@ -25,8 +31,8 @@ return [
     'archive_password' => env('BACKUP_ARCHIVE_PASSWORD'),
 
     /*
-     * Disque dont les fichiers sont recopiés dans la sauvegarde.
-     * Vide : le disque par défaut de l'application.
+     * Disques dont les fichiers sont recopiés dans la sauvegarde, séparés par
+     * des virgules : « local,public ». Vide : le disque par défaut de l'application.
      */
     'files_disk' => env('BACKUP_FILES_DISK'),
 

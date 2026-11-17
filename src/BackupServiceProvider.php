@@ -66,6 +66,13 @@ class BackupServiceProvider extends ServiceProvider
 
         Config::set('backup.backup.destination.disks', [Settings::DISK]);
 
+        // Nommés d'après leur connexion, deux dumps ne peuvent pas s'écraser dans le
+        // zip, même quand deux serveurs hébergent une base du même nom.
+        if ($settings->databases() !== []) {
+            Config::set('backup.backup.source.databases', $settings->databases());
+            Config::set('backup.backup.database_dump_filename_base', 'connection');
+        }
+
         // Un mot de passe vide ne doit pas effacer celui que l'application aurait défini.
         if ($settings->archivePassword() !== null) {
             Config::set('backup.backup.password', $settings->archivePassword());

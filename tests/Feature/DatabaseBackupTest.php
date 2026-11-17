@@ -31,13 +31,51 @@ class DatabaseBackupTest extends TestCase
         Notification::assertNothingSent();
     }
 
-    private function useSqliteDatabaseFile(): void
+    public function test_zip_holds_one_dump_per_connection_of_the_databases_variable(): void
+    {
+        if ((new ExecutableFinder)->find('sqlite3') === null) {
+            $this->markTestSkipped('The sqlite3 binary is required to dump the test databases.');
+        }
+
+        $this->configureBackup(['BACKUP_DATABASES' => 'site,reporting']);
+        $this->useSqliteDatabaseFile('site');
+        $this->useSqliteDatabaseFile('reporting');
+        $backup = Storage::fake('backups');
+        $this->travelTo('2026-11-17 02:00:00');
+
+        $this->artisan('backup:run', ['--only-db' => true])->assertSuccessful();
+
+        $this->assertSame(
+            ['db-dumps/sqlite-reporting.sql', 'db-dumps/sqlite-site.sql'],
+            $this->zippedFiles($backup->path('db/client-a/2026-11-17-02-00-00.zip')),
+        );
+    }
+
+    private function useSqliteDatabaseFile(string $connection = 'site'): void
     {
         $database = tempnam(sys_get_temp_dir(), 'backup-test-');
         $this->beforeApplicationDestroyed(fn () => File::delete($database));
 
-        Config::set('database.connections.site', ['driver' => 'sqlite', 'database' => $database]);
-        Config::set('backup.backup.source.databases', ['site']);
+        Config::set("database.connections.{$connection}", ['driver' => 'sqlite', 'database' => $database]);
+
+        if (Config::get('brindepaille_backup.databases') === null) {
+            Config::set('backup.backup.source.databases', [$connection]);
+        }
+    }
+
+    /**
+     * @return list<string>
+     */
+    private function zippedFiles(string $zipPath): array
+    {
+        $zip = new ZipArchive;
+        $zip->open($zipPath);
+        $names = array_map(fn (int $index): string => (string) $zip->getNameIndex($index), range(0, $zip->numFiles - 1));
+        $zip->close();
+
+        sort($names);
+
+        return $names;
     }
 
     private function isEncrypted(string $zipPath): bool

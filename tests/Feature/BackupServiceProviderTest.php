@@ -115,6 +115,13 @@ class BackupServiceProviderTest extends TestCase
         $this->assertSame(['backups'], $backup->destination->disks);
     }
 
+    public function test_databases_variable_lists_the_connections_spatie_dumps(): void
+    {
+        $this->configureBackup(['BACKUP_DATABASES' => 'mysql, reporting,mysql']);
+
+        $this->assertSame(['mysql', 'reporting'], $this->spatieBackupConfig()->source->databases);
+    }
+
     public function test_leaves_the_backup_name_of_spatie_alone_while_the_site_has_no_name(): void
     {
         $this->configureBackup(['BACKUP_NAME' => null]);

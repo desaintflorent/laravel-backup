@@ -78,9 +78,32 @@ final readonly class Settings
         return $this->string('archive_password');
     }
 
-    public function filesDisk(): ?string
+    /**
+     * Les disques à recopier, chacun dans son sous-dossier de filesFolder().
+     *
+     * @return list<string>
+     */
+    public function filesDisks(): array
     {
-        return $this->string('files_disk');
+        $names = $this->names('files_disk');
+
+        if ($names !== []) {
+            return $names;
+        }
+
+        $default = $this->config->get('filesystems.default');
+
+        return is_string($default) && $default !== '' ? [$default] : [];
+    }
+
+    /**
+     * Les connexions à dumper. Vide : celles que Spatie ou l'application ont choisies.
+     *
+     * @return list<string>
+     */
+    public function databases(): array
+    {
+        return $this->names('databases');
     }
 
     public function runsOnOneServer(): bool
@@ -104,6 +127,19 @@ final readonly class Settings
     public function disk(): array
     {
         return (array) $this->config->get(self::CONFIG.'.disk', []);
+    }
+
+    /**
+     * @return list<string> Les noms d'une liste séparée par des virgules, sans doublon.
+     */
+    private function names(string $key): array
+    {
+        $names = array_filter(
+            array_map(trim(...), explode(',', $this->string($key) ?? '')),
+            fn (string $name): bool => $name !== '',
+        );
+
+        return array_values(array_unique($names));
     }
 
     private function string(string $key): ?string
