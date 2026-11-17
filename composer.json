@@ -8,7 +8,7 @@
         "backup",
         "s3"
     ],
-    "license": "proprietary",
+    "license": "MIT",
     "require": {
         "php": "^8.5",
         "illuminate/console": "^13.0",

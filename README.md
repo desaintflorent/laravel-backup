@@ -23,18 +23,7 @@ composer require brindepaille/laravel-backup
 
 `composer require` sans contrainte demande une version taguée (`v1.0.0`, …) ; sans tag, précise la branche : `brindepaille/laravel-backup:dev-main`.
 
-Si le dépôt GitHub est privé, Composer doit s'y authentifier avec un jeton GitHub limité à ce dépôt (fine-grained, permission *Contents* en lecture seule), sur ta machine comme chez l'hébergeur :
-
-```bash
-composer config --global github-oauth.github.com <jeton>
-```
-
-Sur Laravel Cloud, la [méthode documentée](https://cloud.laravel.com/docs/environments#private-composer-packages) est une ligne `composer config` dans les commandes de build, avant `composer install`, le jeton étant rangé dans une variable de l'environnement :
-
-```bash
-composer config github-oauth.github.com "$GITHUB_COMPOSER_TOKEN"
-composer install --no-dev
-```
+Le dépôt est public : aucun jeton n'est nécessaire, ni en local ni chez l'hébergeur.
 
 ## Variables d'environnement
 
